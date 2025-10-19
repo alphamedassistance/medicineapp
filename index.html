@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technology in Health</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Styles for a High-Tech Feel */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #0a0a1a;
+            color: #e0e0e0;
+            overflow: hidden; /* Prevent scrollbars from the canvas */
+            line-height: 1.7;
+            letter-spacing: 0.5px;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            padding-bottom: 7rem; /* <-- Pushes content up to make space for nav buttons */
+            box-sizing: border-box; /* <-- Ensures padding is calculated within the height */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.7s ease-in-out, visibility 0.7s ease-in-out;
+            overflow-y: auto;
+        }
+
+        /* Added style to handle long content slides */
+        .slide.slide-long {
+            justify-content: flex-start;
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .slide-content {
+            background: rgba(10, 25, 47, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.2);
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 700;
+            color: #00bfff; /* Deep Sky Blue */
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+        }
+
+        .nav-buttons {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .nav-btn, .lang-btn, .action-btn {
+            background: rgba(0, 191, 255, 0.1);
+            border: 1px solid #00bfff;
+            color: #00bfff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+            font-family: 'Exo 2', sans-serif;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-decoration: none; /* Added for <a> tag */
+            display: inline-block; /* Added for <a> tag */
+        }
+
+        .nav-btn:hover, .lang-btn:hover, .action-btn:hover {
+            background-color: #00bfff;
+            color: #0a0a1a;
+            box-shadow: 0 0 20px #00bfff;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        ul, ol {
+            list-style-position: inside;
+            margin-left: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        th, td {
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(0, 191, 255, 0.2);
+            color: #00bfff;
+            font-family: 'Exo 2', sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div id="slide-0" class="slide active">
+        <div class="slide-content text-center">
+            <h1 class="text-4xl md:text-5xl mb-4" data-key="title_lang">Choose Your Language</h1>
+            <p class="mb-8 text-lg" data-key="subtitle_lang">Pumili ng Iyong Wika</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="lang-btn" onclick="selectLanguage('en')">English</button>
+                <button class="lang-btn" onclick="selectLanguage('tl')">Tagalog</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="slide-1" class="slide">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl mb-2" data-key="s1_title"></h2>
+            <p class="text-lg md:text-xl text-gray-300 mb-6" data-key="s1_subtitle"></p>
+            <p class="mb-4" data-key="s1_p1"></p>
+            <p data-key="s1_p2"></p>
+        </div>
+    </div>
+
+    <div id="slide-2" class="slide">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl mb-2" data-key="s2_title"></h2>
+            <p class="text-lg md:text-xl text-gray-300 mb-6" data-key="s2_subtitle"></p>
+            <ul class="list-disc space-y-3">
+                <li><strong class="text-cyan-300" data-key="s2_li1_strong"></strong> <span data-key="s2_li1_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s2_li2_strong"></strong> <span data-key="s2_li2_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s2_li3_strong"></strong> <span data-key="s2_li3_span"></span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="slide-3" class="slide">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl mb-2" data-key="s3_title"></h2>
+            <p class="text-lg md:text-xl text-gray-300 mb-6" data-key="s3_subtitle"></p>
+            <ol class="list-decimal space-y-2">
+                <li><strong class="text-cyan-300" data-key="s3_li1_strong"></strong> <span data-key="s3_li1_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s3_li2_strong"></strong> <span data-key="s3_li2_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s3_li3_strong"></strong> <span data-key="s3_li3_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s3_li4_strong"></strong> <span data-key="s3_li4_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s3_li5_strong"></strong> <span data-key="s3_li5_span"></span></li>
+            </ol>
+        </div>
+    </div>
+
+    <div id="slide-4" class="slide">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl mb-2" data-key="s4_title"></h2>
+            <p class="text-lg md:text-xl text-gray-300 mb-6" data-key="s4_subtitle"></p>
+            <ul class="list-disc space-y-3">
+                <li><strong class="text-cyan-300" data-key="s4_li1_strong"></strong> <span data-key="s4_li1_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s4_li2_strong"></strong> <span data-key="s4_li2_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s4_li3_strong"></strong> <span data-key="s4_li3_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s4_li4_strong"></strong> <span data-key="s4_li4_span"></span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="slide-5" class="slide">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl mb-2" data-key="s5_title"></h2>
+            <p class="text-lg md:text-xl text-gray-300 mb-6" data-key="s5_subtitle"></p>
+            <ul class="list-disc space-y-3">
+                <li><strong class="text-cyan-300" data-key="s5_li1_strong"></strong> <span data-key="s5_li1_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s5_li2_strong"></strong> <span data-key="s5_li2_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s5_li3_strong"></strong> <span data-key="s5_li3_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s5_li4_strong"></strong> <span data-key="s5_li4_span"></span></li>
+            </ul>
+            <p class="mt-6" data-key="s5_p1"></p>
+        </div>
+    </div>
+    
+    <div id="slide-6" class="slide">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl mb-2" data-key="s6_title"></h2>
+            <p class="text-lg md:text-xl text-gray-300 mb-6" data-key="s6_subtitle"></p>
+            <p class="mb-4" data-key="s6_p1"></p>
+            <ul class="list-disc space-y-3">
+                <li><strong class="text-cyan-300" data-key="s6_li1_strong"></strong> <span data-key="s6_li1_span"></span></li>
+                <li><strong class="text-cyan-300" data-key="s6_li2_strong"></strong> <span data-key="s6_li2_span"></span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="slide-7" class="slide">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl mb-6" data-key="s7_title"></h2>
+            <ul class="list-disc grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-lg">
+                <li data-key="s7_li1"></li>
+                <li data-key="s7_li2"></li>
+                <li data-key="s7_li3"></li>
+                <li data-key="s7_li4"></li>
+                <li data-key="s7_li5"></li>
+                <li data-key="s7_li6"></li>
+                <li data-key="s7_li7"></li>
+            </ul>
+            <div class="text-center mt-8">
+                <button id="price-btn" class="action-btn" data-key="price_btn"></button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="slide-8" class="slide slide-long">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl mb-2" data-key="s8_title"></h2>
+            <p class="mb-4"><strong data-key="s8_app"></strong> <span data-key="s8_app_name"></span></p>
+            <p class="mb-4"><strong data-key="s8_client"></strong> <span data-key="s8_client_type"></span></p>
+            <h3 class="text-2xl mt-6 mb-4" data-key="s8_table1_title"></h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-key="s8_th1"></th>
+                            <th data-key="s8_th2"></th>
+                            <th data-key="s8_th3"></th>
+                            <th data-key="s8_th4"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-key="s8_r1c1"></td>
+                            <td data-key="s8_r1c2"></td>
+                            <td data-key="s8_r1c3"></td>
+                            <td data-key="s8_r1c4"></td>
+                        </tr>
+                        <tr>
+                            <td data-key="s8_r2c1"></td>
+                            <td data-key="s8_r2c2"></td>
+                            <td data-key="s8_r2c3"></td>
+                            <td data-key="s8_r2c4"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold" data-key="s8_r3c1"></td>
+                            <td data-key="s8_r3c2"></td>
+                            <td data-key="s8_r3c3"></td>
+                            <td class="font-bold" data-key="s8_r3c4"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3 class="text-2xl mt-6 mb-4" data-key="s8_table2_title"></h3>
+             <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-key="s8_th5"></th>
+                            <th data-key="s8_th6"></th>
+                            <th data-key="s8_th7"></th>
+                            <th data-key="s8_th8"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-key="s8_r4c1"></td>
+                            <td data-key="s8_r4c2"></td>
+                            <td data-key="s8_r4c3"></td>
+                            <td data-key="s8_r4c4"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                <button id="pricing-prev-btn" class="nav-btn" data-key="prev_btn"></button>
+                <button id="purchase-btn" class="action-btn" data-key="purchase_btn"></button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="slide-9" class="slide">
+        <div class="slide-content text-center">
+            <h2 class="text-3xl md:text-4xl mb-4" data-key="s9_title"></h2>
+            <p class="mb-8 text-lg" data-key="s9_p1"></p>
+            <a href="https://web.facebook.com/profile.php?id=61578341193853" target="_blank" id="message-btn" class="action-btn inline-block" data-key="message_btn"></a>
+        </div>
+    </div>
+
+
+    <div id="nav-container" class="nav-buttons" style="display: none;">
+        <a href="https://alphamedassistance.github.io/entranceportal/" id="home-btn" class="nav-btn" data-key="home_btn"></a>
+        <button id="prev-btn" class="nav-btn" data-key="prev_btn"></button>
+        <button id="next-btn" class="nav-btn" data-key="next_btn"></button>
+    </div>
+
+    <script>
+        // --- TEXT CONTENT ---
+        const translations = {
+            en: {
+                title_lang: "Choose Your Language",
+                subtitle_lang: "Select your preferred language to continue",
+                s1_title: "Welcome to the Medicine Monitoring Support App",
+                s1_subtitle: "Effortless Medication Management at Your Fingertips",
+                s1_p1: "Welcome to the Medicine Support App, a powerful tool designed to help caregivers and individuals track medication schedules with precision and ease.",
+                s1_p2: "Our application simplifies the process of managing complex medication regimens, ensuring timely intake and maintaining detailed records for better health outcomes.",
+                s2_title: "The Interactive Dashboard",
+                s2_subtitle: "Your Central Hub for Medication Scheduling",
+                s2_li1_strong: "At-a-Glance View:",
+                s2_li1_span: "See all scheduled medication intakes for the current month.",
+                s2_li2_strong: "Easy Registration:",
+                s2_li2_span: "Simply click on any date to open the registration form and schedule a new medication for a patient.",
+                s2_li3_strong: "Quick Access Panel:",
+                s2_li3_span: "A collapsible menu provides instant access to all major features, keeping your workspace clean and organized.",
+                s3_title: "Registering Medication",
+                s3_subtitle: "Simple and Detailed Entry",
+                s3_li1_strong: "Patient Information:",
+                s3_li1_span: "Enter the patient's full name, age, gender, and date of birth.",
+                s3_li2_strong: "Medication Details:",
+                s3_li2_span: "Specify the medicine name and type.",
+                s3_li3_strong: "Scheduling:",
+                s3_li3_span: "Set the date, initial time of intake, and frequency (e.g., twice a day, after meals).",
+                s3_li4_strong: "Set Multiple Entries:",
+                s3_li4_span: "For medications taken multiple times a day, the app allows you to set specific times for each dose.",
+                s3_li5_strong: "Save:",
+                s3_li5_span: "Once all details are entered, save the record.",
+                s4_title: "Viewing and Managing Records",
+                s4_subtitle: "All Your Data in One Place",
+                s4_li1_strong: "Live Search:",
+                s4_li1_span: "Quickly find any record by searching for a patient's name, medicine, or status.",
+                s4_li2_strong: "Complete Details:",
+                s4_li2_span: "The table displays full patient and medication information, including intake times and frequencies.",
+                s4_li3_strong: "Action Buttons:",
+                s4_li3_span: "Edit, Delete, mark as Done/Failed, or Undo a status update.",
+                s4_li4_strong: "Automatic Status Updates:",
+                s4_li4_span: "The app automatically marks pending intakes as 'failed' if the scheduled time passes without action.",
+                s5_title: "Powerful Reporting Tools",
+                s5_subtitle: "Generate Insightful Reports with a Single Click",
+                s5_li1_strong: "List of Patients:",
+                s5_li1_span: "View a complete list of all registered patients with their demographic details.",
+                s5_li2_strong: "Summary Report:",
+                s5_li2_span: "Generate a daily summary of all scheduled medications for a specific date, including their status.",
+                s5_li3_strong: "List of Taken Medicine:",
+                s5_li3_span: "See a report of all medications successfully marked as 'Done' for a selected date.",
+                s5_li4_strong: "Failed to Intake List:",
+                s5_li4_span: "Get a list of all medications marked as 'Failed' for a specific date, helping you follow up promptly.",
+                s5_p1: "All reports can be downloaded as a PDF or copied as text.",
+                s6_title: "Secure Data Management",
+                s6_subtitle: "Your Data, Always Accessible and Safe",
+                s6_p1: "Your data is stored locally on your device, ensuring privacy and security.",
+                s6_li1_strong: "Export Data:",
+                s6_li1_span: "Create a backup of all your medication and patient records in a JSON file. This is perfect for record-keeping or transferring data.",
+                s6_li2_strong: "Import Data:",
+                s6_li2_span: "Easily restore your data from a JSON file. You can either upload the file or paste the content directly.",
+                s7_title: "Key Features at a Glance",
+                s7_li1: "Intuitive Calendar Interface",
+                s7_li2: "Detailed Medication Registration",
+                s7_li3: "Comprehensive Record Viewing",
+                s7_li4: "Automated Status Tracking",
+                s7_li5: "Versatile Reporting",
+                s7_li6: "Secure, Local Data Storage",
+                s7_li7: "User-Friendly Design",
+                price_btn: "Price and Quotation",
+                s8_title: "Subscription-Based Pricing (Yearly)",
+                s8_app: "Application:",
+                s8_app_name: "Medicine Monitoring Support App",
+                s8_client: "Client Type:",
+                s8_client_type: "Single Client",
+                s8_table1_title: "Quotation Table (Draft Structure)",
+                s8_th1: "Item / Description",
+                s8_th2: "Inclusions",
+                s8_th3: "Billing Cycle",
+                s8_th4: "Cost (PHP)",
+                s8_r1c1: "Annual Licensing / Access Fee",
+                s8_r1c2: "• Exclusive use of the application • 1 client account • Standard features access",
+                s8_r1c3: "Yearly",
+                s8_r1c4: "Free due to promotion but limited time only",
+                s8_r2c1: "Maintenance & Updates",
+                s8_r2c2: "• Bug fixes • Feature enhancements • Performance optimization",
+                s8_r2c3: "Yearly",
+                s8_r2c4: "Free due to promotion but limited time only",
+                s8_r3c1: "Total Annual Cost",
+                s8_r3c2: "Licensing + Maintenance",
+                s8_r3c3: "Yearly",
+                s8_r3c4: "Free due to promotion but limited time only",
+                s8_table2_title: "Optional Add-On",
+                s8_th5: "Add-On Service",
+                s8_th6: "Inclusions",
+                s8_th7: "Billing Cycle",
+                s8_th8: "Cost (PHP)",
+                s8_r4c1: "Technical Support (Optional)",
+                s8_r4c2: "Email/Chat assistance / Client training sessions",
+                s8_r4c3: "Yearly",
+                s8_r4c4: "Free due to promotion but limited time only",
+                purchase_btn: "Purchase",
+                s9_title: "Thank You!",
+                s9_p1: "Thank you for your interest in our digital products. To pursue your availment, please message us on our page by clicking the button below.",
+                message_btn: "Message Us",
+                prev_btn: "Previous",
+                next_btn: "Next",
+                home_btn: "Home",
+            },
+            tl: {
+                title_lang: "Pumili ng Iyong Wika",
+                subtitle_lang: "Piliin ang iyong gustong wika para magpatuloy",
+                s1_title: "Maligayang Pagdating sa Medicine Monitoring Support App",
+                s1_subtitle: "Walang Kahirap-hirap na Pamamahala ng Gamot sa Iyong mga Kamay",
+                s1_p1: "Maligayang pagdating sa Medicine Support App, isang makapangyarihang tool na idinisenyo upang tulungan ang mga tagapag-alaga at indibidwal na subaybayan ang mga iskedyul ng gamot nang may katumpakan at kadalian.",
+                s1_p2: "Pinapasimple ng aming aplikasyon ang proseso ng pamamahala ng mga kumplikadong regimen ng gamot, tinitiyak ang napapanahong pag-inom at pagpapanatili ng mga detalyadong talaan para sa mas magandang resulta sa kalusugan.",
+                s2_title: "Ang Interactive na Dashboard",
+                s2_subtitle: "Ang Iyong Sentral na Hub para sa Pag-iiskedyul ng Gamot",
+                s2_li1_strong: "Mabilis na Pagsulyap:",
+                s2_li1_span: "Tingnan ang lahat ng naka-iskedyul na pag-inom ng gamot para sa kasalukuyang buwan.",
+                s2_li2_strong: "Madaling Pagpaparehistro:",
+                s2_li2_span: "I-click lamang ang anumang petsa upang buksan ang form ng pagpaparehistro at mag-iskedyul ng bagong gamot para sa isang pasyente.",
+                s2_li3_strong: "Mabilis na Access Panel:",
+                s2_li3_span: "Isang collapsible na menu ang nagbibigay ng agarang access sa lahat ng pangunahing feature, na nagpapanatiling malinis at organisado ang iyong workspace.",
+                s3_title: "Pagrerehistro ng Gamot",
+                s3_subtitle: "Simple at Detalyadong Pag-pasok ng Datos",
+                s3_li1_strong: "Impormasyon ng Pasyente:",
+                s3_li1_span: "Ilagay ang buong pangalan, edad, kasarian, at petsa ng kapanganakan ng pasyente.",
+                s3_li2_strong: "Mga Detalye ng Gamot:",
+                s3_li2_span: "Tukuyin ang pangalan at uri ng gamot.",
+                s3_li3_strong: "Pag-iiskedyul:",
+                s3_li3_span: "Itakda ang petsa, paunang oras ng pag-inom, at dalas (hal., dalawang beses sa isang araw, pagkatapos kumain).",
+                s3_li4_strong: "Magtakda ng Maramihang Pag-inom:",
+                s3_li4_span: "Para sa mga gamot na iniinom nang maraming beses sa isang araw, pinapayagan ka ng app na magtakda ng mga partikular na oras para sa bawat dosis.",
+                s3_li5_strong: "I-save:",
+                s3_li5_span: "Kapag naipasok na ang lahat ng detalye, i-save ang talaan.",
+                s4_title: "Pagtingin at Pamamahala ng mga Talaan",
+                s4_subtitle: "Lahat ng Iyong Datos sa Isang Lugar",
+                s4_li1_strong: "Live na Paghahanap:",
+                s4_li1_span: "Mabilis na hanapin ang anumang talaan sa pamamagitan ng paghahanap ng pangalan ng pasyente, gamot, o status.",
+                s4_li2_strong: "Kumpletong Detalye:",
+                s4_li2_span: "Ipinapakita ng talahanayan ang buong impormasyon ng pasyente at gamot, kabilang ang mga oras ng pag-inom at dalas.",
+                s4_li3_strong: "Mga Pindutan ng Aksyon:",
+                s4_li3_span: "I-edit, Tanggalin, markahan bilang Tapos na/Nabigo, o I-undo ang isang update sa status.",
+                s4_li4_strong: "Awtomatikong Update sa Status:",
+                s4_li4_span: "Awtomatikong minamarkahan ng app ang mga nakabinbing pag-inom bilang 'nabigo' kung lumipas ang naka-iskedyul na oras nang walang aksyon.",
+                s5_title: "Makapangyarihang Mga Tool sa Pag-uulat",
+                s5_subtitle: "Gumawa ng mga Matalinong Ulat sa Isang Click",
+                s5_li1_strong: "Listahan ng mga Pasyente:",
+                s5_li1_span: "Tingnan ang isang kumpletong listahan ng lahat ng nakarehistrong pasyente kasama ang kanilang mga detalye.",
+                s5_li2_strong: "Buod na Ulat:",
+                s5_li2_span: "Gumawa ng pang-araw-araw na buod ng lahat ng naka-iskedyul na gamot para sa isang partikular na petsa, kasama ang kanilang status.",
+                s5_li3_strong: "Listahan ng Nainom na Gamot:",
+                s5_li3_span: "Tingnan ang isang ulat ng lahat ng gamot na matagumpay na minarkahan bilang 'Tapos na' para sa isang napiling petsa.",
+                s5_li4_strong: "Listahan ng Hindi Nainom:",
+                s5_li4_span: "Kumuha ng isang listahan ng lahat ng gamot na minarkahan bilang 'Nabigo' para sa isang partikular na petsa, na tumutulong sa iyo na mag-follow up kaagad.",
+                s5_p1: "Lahat ng ulat ay maaaring i-download bilang PDF o kopyahin bilang text.",
+                s6_title: "Ligtas na Pamamahala ng Datos",
+                s6_subtitle: "Ang Iyong Datos, Laging Abot-kamay at Ligtas",
+                s6_p1: "Ang iyong datos ay naka-imbak nang lokal sa iyong device, tinitiyak ang privacy at seguridad.",
+                s6_li1_strong: "I-export ang Datos:",
+                s6_li1_span: "Gumawa ng backup ng lahat ng iyong mga talaan ng gamot at pasyente sa isang JSON file. Perpekto ito para sa pag-iingat ng talaan o paglilipat ng datos.",
+                s6_li2_strong: "I-import ang Datos:",
+                s6_li2_span: "Madaling ibalik ang iyong datos mula sa isang JSON file. Maaari mong i-upload ang file o direktang i-paste ang nilalaman.",
+                s7_title: "Mga Pangunahing Tampok sa Isang Sulyap",
+                s7_li1: "Intuitive na Interface ng Kalendaryo",
+                s7_li2: "Detalyadong Pagpaparehistro ng Gamot",
+                s7_li3: "Komprehensibong Pagtingin sa Talaan",
+                s7_li4: "Awtomatikong Pagsubaybay sa Status",
+                s7_li5: "Maraming Gamit na Pag-uulat",
+                s7_li6: "Ligtas, Lokal na Imbakan ng Datos",
+                s7_li7: "Disenyong Madaling Gamitin",
+                price_btn: "Presyo at Sipi",
+                s8_title: "Pagpepresyo na Nakabatay sa Subskripsyon (Taunan)",
+                s8_app: "Aplikasyon:",
+                s8_app_name: "Medicine Support App",
+                s8_client: "Uri ng Kliyente:",
+                s8_client_type: "Isang Kliyente",
+                s8_table1_title: "Talaan ng Sipi (Draft na Istraktura)",
+                s8_th1: "Aytem / Deskripsyon",
+                s8_th2: "Mga Kasama",
+                s8_th3: "Siklo ng Pagsingil",
+                s8_th4: "Halaga (PHP)",
+                s8_r1c1: "Taunang Bayad sa Lisensya / Access",
+                s8_r1c2: "• Eksklusibong paggamit ng aplikasyon • 1 client account • Access sa mga karaniwang feature",
+                s8_r1c3: "Taunan",
+                s8_r1c4: "Free due to promotion but limited time only",
+                s8_r2c1: "Pagpapanatili at mga Update",
+                s8_r2c2: "• Pag-aayos ng bug • Pagpapahusay ng feature • Pag-optimize ng pagganap",
+                s8_r2c3: "Taunan",
+                s8_r2c4: "Libre dahil nasa promosyon",
+                s8_r3c1: "Kabuuang Taunang Halaga",
+                s8_r3c2: "Lisensya + Pagpapanatili",
+                s8_r3c3: "Taunan",
+                s8_r3c4: "Free due to promotion but limited time only",
+                s8_table2_title: "Opsyonal na Add-On",
+                s8_th5: "Serbisyo ng Add-On",
+                s8_th6: "Mga Kasama",
+                s8_th7: "Siklo ng Pagsingil",
+                s8_th8: "Halaga (PHP)",
+                s8_r4c1: "Teknikal na Suporta (Opsyonal)",
+                s8_r4c2: "Tulong sa Email/Chat / Mga sesyon ng pagsasanay sa kliyente",
+                s8_r4c3: "Taunan",
+                s8_r4c4: "Libre dahil nasa promosyon",
+                purchase_btn: "Bumili",
+                s9_title: "Maraming Salamat!",
+                s9_p1: "Salamat sa iyong interes sa aming mga digital na produkto. Upang maipagpatuloy ang iyong pagkuha, mangyaring mag-mensahe sa amin sa aming pahina sa pamamagitan ng pag-click sa pindutan sa ibaba.",
+                message_btn: "Mag-mensahe sa Amin",
+                prev_btn: "Nakaraan",
+                next_btn: "Susunod",
+                home_btn: "Home",
+            }
+        };
+
+        // --- APP LOGIC ---
+        let currentSlide = 0;
+        const totalContentSlides = 7;
+        let presentationStarted = false;
+
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const priceBtn = document.getElementById('price-btn');
+        const purchaseBtn = document.getElementById('purchase-btn');
+        const navContainer = document.getElementById('nav-container');
+        const pricingPrevBtn = document.getElementById('pricing-prev-btn');
+
+        function updateText(lang) {
+            const langPack = translations[lang];
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (langPack[key]) {
+                    element.textContent = langPack[key];
+                }
+            });
+        }
+        
+        function showSlide(slideIndex) {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === slideIndex);
+            });
+            updateNavButtons();
+        }
+
+        function updateNavButtons() {
+            if (!presentationStarted) return;
+            // Only show nav buttons during the main presentation (slides 1-7)
+            if (currentSlide > 0 && currentSlide <= totalContentSlides) {
+                navContainer.style.display = 'flex';
+                prevBtn.disabled = currentSlide === 1;
+                nextBtn.disabled = currentSlide === totalContentSlides;
+            } else {
+                 navContainer.style.display = 'none';
+            }
+        }
+        
+        function selectLanguage(lang) {
+            updateText(lang);
+            presentationStarted = true;
+            currentSlide = 1;
+            showSlide(currentSlide);
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 1) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < totalContentSlides) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        });
+        
+        priceBtn.addEventListener('click', () => {
+            currentSlide = 8; // Price slide index
+            showSlide(currentSlide);
+        });
+
+        purchaseBtn.addEventListener('click', () => {
+            currentSlide = 9; // Thank you slide index
+            showSlide(currentSlide);
+        });
+
+        pricingPrevBtn.addEventListener('click', () => {
+            currentSlide = 7; // Go back to the features slide
+            showSlide(currentSlide);
+        });
+
+
+        // --- BACKGROUND CANVAS ANIMATION ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+
+        let mouse = {
+            x: null,
+            y: null,
+            radius: (canvas.height / 120) * (canvas.width / 120)
+        };
+
+        window.addEventListener('mousemove', function(event) {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y > canvas.height || this.y < 0) {
+                    this.directionY = -this.directionY;
+                }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 1;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * 0.4) - 0.2;
+                let directionY = (Math.random() * 0.4) - 0.2;
+                let color = 'rgba(0, 191, 255, 0.8)';
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
+                        ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                        opacityValue = 1 - (distance / 20000);
+                        ctx.strokeStyle = `rgba(0, 191, 255, ${opacityValue})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connect();
+        }
+
+        window.addEventListener('resize', function() {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            mouse.radius = ((canvas.height / 120) * (canvas.height / 120));
+            init();
+        });
+
+        // Hide mouse when it's out of the window
+        window.addEventListener('mouseout', function() {
+            mouse.x = undefined;
+            mouse.y = undefined;
+        });
+
+        init();
+        animate();
+    </script>
+</body>
+</html>
